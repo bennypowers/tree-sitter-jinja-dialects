@@ -1,0 +1,169 @@
+==================
+optional else conditional
+==================
+
+{{ value if enabled }}
+
+---
+
+(source_file
+  (output
+    (conditional_expression
+      value: (identifier)
+      condition: (identifier)))
+  (text))
+
+==================
+optional else with filtered condition
+==================
+
+{{ value if enabled | bool }}
+
+---
+
+(source_file
+  (output
+    (conditional_expression
+      value: (identifier)
+      condition: (filter_expression
+        (identifier)
+        name: (identifier))))
+  (text))
+
+==================
+optional else with parenthesized full conditional as condition
+==================
+
+{{ value if (enabled if present else fallback) }}
+
+---
+
+(source_file
+  (output
+    (conditional_expression
+      value: (identifier)
+      condition: (parenthesized_expression
+        (conditional_expression
+          value: (identifier)
+          condition: (identifier)
+          alternative: (identifier)))))
+  (text))
+
+==================
+optional else in set statement
+==================
+
+{% set y = a if b %}
+
+---
+
+(source_file
+  (statement
+    (set_statement
+      variable: (identifier)
+      value: (conditional_expression
+        value: (identifier)
+        condition: (identifier))))
+  (text))
+
+==================
+optional else conditional as alternative
+==================
+
+{{ a if b else c if d }}
+
+---
+
+(source_file
+  (output
+    (conditional_expression
+      value: (identifier)
+      condition: (identifier)
+      alternative: (conditional_expression
+        value: (identifier)
+        condition: (identifier))))
+  (text))
+
+==================
+full conditional is unchanged
+==================
+
+{{ a if b else c }}
+
+---
+
+(source_file
+  (output
+    (conditional_expression
+      value: (identifier)
+      condition: (identifier)
+      alternative: (identifier)))
+  (text))
+
+==================
+for loop filter is not an optional else conditional
+==================
+
+{% for x in items if x.ok %}{{ x }}{% endfor %}
+
+---
+
+(source_file
+  (statement
+    (for_statement
+      variable: (identifier)
+      iterable: (identifier)
+      (for_condition
+        (member_expression
+          object: (identifier)
+          property: (identifier)))
+      (output
+        (identifier))))
+  (text))
+
+==================
+for loop iterable with parenthesized optional else
+==================
+
+{% for x in (a if b) %}{{ x }}{% endfor %}
+
+---
+
+(source_file
+  (statement
+    (for_statement
+      variable: (identifier)
+      iterable: (parenthesized_expression
+        (conditional_expression
+          value: (identifier)
+          condition: (identifier)))
+      (output
+        (identifier))))
+  (text))
+
+==================
+conditional missing condition
+:error
+==================
+
+{{ a if }}
+
+---
+
+==================
+conditional with dangling else
+:error
+==================
+
+{{ a if b else }}
+
+---
+
+==================
+else without condition
+:error
+==================
+
+{{ a else b }}
+
+---

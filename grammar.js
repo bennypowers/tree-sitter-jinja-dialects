@@ -144,7 +144,7 @@ export default grammar({
       $._statement_start, 'endfor', $._statement_end,
     ),
 
-    for_condition: $ => seq('if', $._expression),
+    for_condition: $ => prec(PREC.CONDITIONAL + 1, seq('if', $._expression)),
 
     block_statement: $ => seq(
       $._statement_start, 'block', field('name', $.identifier), optional('scoped'), $._statement_end,
@@ -314,8 +314,7 @@ export default grammar({
         field('value', $._expression),
         'if',
         field('condition', $._expression),
-        'else',
-        field('alternative', $._expression),
+        optional(seq('else', field('alternative', $._expression))),
       )),
       // Twig: condition ? consequence : alternative
       prec.right(PREC.CONDITIONAL, seq(
